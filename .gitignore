@@ -1,0 +1,6 @@
+node_modules/
+.env
+venv/
+certs/
+logs/
+ca-certificates.crt
