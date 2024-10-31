@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const path = require('path');
 const { handlePickResponse } = require(path.join(__dirname, '..', '..', 'responses', 'pickResponse'));
 const { getConnection } = require(path.join(__dirname, '..', '..', 'database', 'database'));
+const { getCurrentWeek, getSeason } = require(path.join(__dirname, '..', '..', 'services', 'utils'));
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,6 +15,23 @@ module.exports = {
                 .setAutocomplete(true)),
 
     async execute(interaction) {
+        const db = await getConnection();
+        const currentWeek = getCurrentWeek();
+        const season = getSeason();
+
+        // Check if the pick window is open
+        const [windowStatus] = await db.execute(
+            'SELECT is_open FROM pick_window WHERE week = ? AND season = ? LIMIT 1',
+            [currentWeek, season]
+        );
+
+        // If the pick window is closed, send a message to the user
+        if (!windowStatus.length || windowStatus[0].is_open === 0) {
+            await interaction.reply({ content: "You cannot pick a player while games are in play.", ephemeral: true });
+            return;
+        }
+
+        // If the window is open, proceed with handling the pick
         await handlePickResponse(interaction);
     },
 
