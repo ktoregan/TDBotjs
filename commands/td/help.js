@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const path = require('path');
-const { handleHelpResponse } = require(path.join(__dirname, '..', 'responses', 'helpResponse'));
+const { handleHelpResponse } = require(path.join(__dirname, '..', '..', 'responses', 'helpResponse'));
 
 module.exports = {
     data: new SlashCommandBuilder()
