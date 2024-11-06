@@ -1,14 +1,16 @@
 async function handleHelpResponse(interaction) {
     const helpMessage = `
-    **TD Bot Command List:**
+    **TD Showdown Command List:**
     
     **/join** - Join the TD Showdown game. Confirm your entry by typing "y" to participate.
 
-    **/pick** - Select a player for the current week's game. Choose an active player that is not injured. You can only make one pick per week, and the pick must be made when no games are in play. 
+    **/pick** - Choose a player for the current week's game.
 
-    **/pickhistory** - View your pick history, including which players you picked each week and if they scored a touchdown.
+    **/pickhistory** - View your pick history and score.
 
-    Type the commands directly as shown. If your selected player is injured, the bot will notify you & allow you to pick again.
+    **/notifications** - Manage your notification preferences. Choose which alerts you want to receive.
+
+    **/rules** - View the game rules and scoring guidelines.
     `;
 
     await interaction.reply({ content: helpMessage, ephemeral: true });

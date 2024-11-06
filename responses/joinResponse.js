@@ -13,6 +13,9 @@ async function handleJoinResponse(interaction) {
     const userId = interaction.user.id;
     const username = interaction.user.username;
 
+    // Define the notification types
+    const notificationTypes = ['pick_open', 'player_injury', 'player_touchdown', 'leaderboard_update', 'no_pick_reminder'];
+
     try {
         const db = await getConnection();
 
@@ -21,14 +24,26 @@ async function handleJoinResponse(interaction) {
         if (rows.length > 0) {
             await interaction.reply({ content: `${username}, you are already in the game!`, ephemeral: true });
         } else {
+            // Insert the new user into the users table
             await db.execute(
                 'INSERT INTO users (discord_id, username, opt_in, joined_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)',
                 [userId, username, true]
             );
+
+            // Insert the initial leaderboard entry
             await db.execute(
                 'INSERT INTO leaderboard (user_id, points_week, total_points, week, last_updated) VALUES (?, 0, 0, ?, CURRENT_TIMESTAMP)',
                 [userId, getCurrentWeek()]
             );
+
+            // Insert default notification preferences
+            for (const notificationType of notificationTypes) {
+                await db.execute(
+                    'INSERT INTO user_notifications (discord_id, notification_type, is_enabled, created_at, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)',
+                    [userId, notificationType, true]
+                );
+            }
+
             await interaction.reply({ content: `<@${userId}> has successfully joined TD Showdown! 🥳`, ephemeral: false });
         }
 

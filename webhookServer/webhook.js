@@ -27,22 +27,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Webhook to Open Pick Window
-app.post('/webhook/open-pick-window', async (req, res) => {
-    try {
-        const { weekNumber, taggedUsers } = req.body;
-        const mentions = taggedUsers.map(userId => `<@${userId}>`).join(' ');
-
-        const channel = await client.channels.fetch(process.env.DISCORD_CHANNEL_ID);
-        await channel.send(`${mentions} The pick window is now open for Week ${weekNumber}! 🏈`);
-        
-        res.status(200).send('Pick window opened and message sent.');
-    } catch (error) {
-        console.error("Error opening pick window:", error);
-        res.status(500).send('Failed to send message.');
-    }
-});
-
 // Webhook to Notify Player Injury
 app.post('/webhook/player-injury', async (req, res) => {
     try {
@@ -72,27 +56,6 @@ app.post('/webhook/player-touchdown', async (req, res) => {
     } catch (error) {
         console.error("Error sending touchdown notification:", error);
         res.status(500).send('Failed to send message.');
-    }
-});
-
-// Webhook to Post Leaderboard
-app.post('/webhook/post-leaderboard', async (req, res) => {
-    try {
-        const { leaderboard, overall } = req.body;
-
-        const embed = new MessageEmbed()
-            .setTitle("Weekly Results")
-            .setDescription("```" + leaderboard + "```")
-            .addField("Overall Leaderboard", "```" + overall + "```")
-            .setColor('#FFA500'); // Optional: Set color for the embed
-
-        const channel = await client.channels.fetch(process.env.DISCORD_CHANNEL_ID);
-        await channel.send({ embeds: [embed] });
-
-        res.status(200).send('Leaderboard posted.');
-    } catch (error) {
-        console.error("Error posting leaderboard:", error);
-        res.status(500).send('Failed to post leaderboard.');
     }
 });
 
